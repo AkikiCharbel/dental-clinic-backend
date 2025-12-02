@@ -1,24 +1,82 @@
-*.log
-.DS_Store
+# =============================================================================
+# Dental Clinic Backend - Git Ignore
+# =============================================================================
+
+# Environment files
 .env
 .env.backup
 .env.production
+.env.local
+.env.*.local
+
+# Logs
+*.log
+storage/logs/*
+!storage/logs/.gitkeep
+
+# Cache and compiled files
 .phpactor.json
 .phpunit.result.cache
+/.phpunit.cache
+/bootstrap/cache/*
+!bootstrap/cache/.gitkeep
+
+# IDE and editors
 /.fleet
 /.idea
 /.nova
-/.phpunit.cache
 /.vscode
 /.zed
-/auth.json
+*.swp
+*.swo
+*~
+
+# Dependencies
+/vendor
 /node_modules
+composer.phar
+
+# Build outputs
 /public/build
 /public/hot
 /public/storage
+/public/vendor
+
+# Storage
 /storage/*.key
 /storage/pail
-/vendor
+/storage/debugbar
+/storage/framework/cache/data/*
+!storage/framework/cache/data/.gitkeep
+/storage/framework/sessions/*
+!storage/framework/sessions/.gitkeep
+/storage/framework/views/*
+!storage/framework/views/.gitkeep
+
+# Testing
+.phpunit.result.cache
+.pest-coverage
+coverage/
+
+# Authentication
+/auth.json
+
+# OS files
+.DS_Store
+Thumbs.db
+*.bak
+
+# Local configurations
 Homestead.json
 Homestead.yaml
-Thumbs.db
+docker-compose.override.yml
+
+# PHPStan cache
+/storage/phpstan
+
+# Horizon
+/storage/horizon
+
+# NPM
+npm-debug.log
+yarn-error.log

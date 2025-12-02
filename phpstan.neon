@@ -1,0 +1,32 @@
+includes:
+    - vendor/larastan/larastan/extension.neon
+
+parameters:
+    paths:
+        - app
+    level: 10
+
+    # Ignore errors in specific files during initial setup
+    excludePaths:
+        - app/Providers/HorizonServiceProvider.php
+
+    # Type coverage settings
+    reportUnmatchedIgnoredErrors: false
+
+    # Laravel-specific settings
+    checkModelProperties: true
+    checkPhpDocMissingReturn: true
+
+    # Ignore specific errors that are common in Laravel
+    ignoreErrors:
+        # Ignore dynamic method calls on facades
+        - '#Call to an undefined method Illuminate\\Database\\Eloquent\\Builder::#'
+
+        # Ignore mixed types in some cases
+        - '#Parameter \#1 \$callback of method Illuminate\\Support\\Collection<#'
+
+        # Ignore covariance issue in BelongsToTenant trait
+        - '#Method .+::withoutTenantScope\(\) should return Illuminate\\Database\\Eloquent\\Builder<static\(.+\)> but returns#'
+
+    # Memory limit for analysis
+    # memoryLimit: 512M
