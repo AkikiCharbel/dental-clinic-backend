@@ -73,6 +73,16 @@ jobs:
       - name: Run PHPStan (Static Analysis)
         run: ./vendor/bin/phpstan analyse --memory-limit=512M
 
+      - name: Generate OpenAPI spec
+        run: php artisan scribe:generate --no-interaction
+        env:
+          DB_CONNECTION: pgsql
+          DB_HOST: 127.0.0.1
+          DB_PORT: 5432
+          DB_DATABASE: dental_clinic_test
+          DB_USERNAME: postgres
+          DB_PASSWORD: secret
+
       - name: Run tests
         run: php artisan test --parallel
         env:

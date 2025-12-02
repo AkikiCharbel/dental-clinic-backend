@@ -42,4 +42,35 @@ describe('Health Check Endpoints', function (): void {
         $responseData = $response->json();
         expect($responseData['meta']['request_id'])->toBe($customRequestId);
     });
+
+    it('returns timestamp in ISO8601 format', function (): void {
+        $response = getJson('/api/v1/health');
+
+        $response->assertOk();
+
+        $responseData = $response->json();
+        $timestamp = $responseData['meta']['timestamp'];
+
+        expect($timestamp)->toMatch('/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/');
+    });
+});
+
+describe('Health Check Response Format', function (): void {
+    it('has consistent success response structure', function (): void {
+        $response = getJson('/api/v1/health');
+
+        $response->assertOk()
+            ->assertJsonStructure([
+                'success',
+                'message',
+                'data',
+                'meta' => [
+                    'timestamp',
+                    'request_id',
+                ],
+            ]);
+
+        $responseData = $response->json();
+        expect($responseData['success'])->toBeTrue();
+    });
 });
