@@ -1,59 +1,243 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Dental Clinic Backend
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+[![CI](https://github.com/AkikiCharbel/dental-clinic-backend/actions/workflows/ci.yml/badge.svg)](https://github.com/AkikiCharbel/dental-clinic-backend/actions/workflows/ci.yml)
 
-## About Laravel
+A comprehensive dental clinic management system backend built with Laravel 12.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## Requirements
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+- PHP 8.4+
+- PostgreSQL 16+
+- Redis 7+
+- Composer 2.x
+- Node.js 20+ (for frontend assets)
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## Quick Start
 
-## Learning Laravel
+### 1. Clone the Repository
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+```bash
+git clone <repository-url>
+cd dental-clinic-backend
+```
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+### 2. Install Dependencies
 
-## Laravel Sponsors
+```bash
+composer install
+```
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+### 3. Environment Setup
 
-### Premium Partners
+```bash
+cp .env.example .env
+php artisan key:generate
+```
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+### 4. Start Services (Docker)
 
-## Contributing
+```bash
+docker-compose up -d
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+This will start:
+- PostgreSQL on port 5432
+- Redis on port 6379
 
-## Code of Conduct
+### 5. Run Migrations
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+```bash
+php artisan migrate
+```
 
-## Security Vulnerabilities
+### 6. Start Development Server
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+```bash
+php artisan serve
+```
+
+The API will be available at `http://localhost:8000`.
+
+## Configuration
+
+### Database
+
+Update your `.env` file with PostgreSQL credentials:
+
+```env
+DB_CONNECTION=pgsql
+DB_HOST=127.0.0.1
+DB_PORT=5432
+DB_DATABASE=dental_clinic
+DB_USERNAME=postgres
+DB_PASSWORD=secret
+```
+
+### Redis
+
+Redis is used for caching, sessions, and queues:
+
+```env
+REDIS_HOST=127.0.0.1
+REDIS_PORT=6379
+CACHE_STORE=redis
+SESSION_DRIVER=redis
+QUEUE_CONNECTION=redis
+```
+
+## Development
+
+### Code Quality
+
+Run all quality checks:
+
+```bash
+composer quality
+```
+
+Individual checks:
+
+```bash
+# Code formatting check
+composer pint:test
+
+# Fix code formatting
+composer pint
+
+# Static analysis
+composer stan
+
+# Run tests
+composer test
+```
+
+### Testing
+
+```bash
+# Run all tests
+php artisan test
+
+# Run tests in parallel
+php artisan test --parallel
+
+# Run specific test file
+php artisan test tests/Feature/Api/V1/HealthTest.php
+```
+
+### Queue Worker (Horizon)
+
+Start the queue worker:
+
+```bash
+php artisan horizon
+```
+
+Access the Horizon dashboard at `/horizon` (requires authentication in production).
+
+## API Documentation
+
+### Base URL
+
+```
+http://localhost:8000/api/v1
+```
+
+### Health Check Endpoints
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/health` | Basic health check |
+| GET | `/health/database` | Database connection check |
+| GET | `/health/redis` | Redis connection check |
+| GET | `/health/cache` | Cache system check |
+| GET | `/health/full` | Full system health check |
+
+### Response Format
+
+All API responses follow this structure:
+
+**Success Response:**
+```json
+{
+    "success": true,
+    "message": "Success message",
+    "data": { },
+    "meta": {
+        "request_id": "uuid",
+        "timestamp": "2024-01-01T00:00:00.000000Z"
+    }
+}
+```
+
+**Error Response:**
+```json
+{
+    "success": false,
+    "message": "Error message",
+    "errors": { },
+    "meta": {
+        "request_id": "uuid",
+        "timestamp": "2024-01-01T00:00:00.000000Z"
+    }
+}
+```
+
+## Project Structure
+
+```
+app/
+├── Actions/              # Single-purpose action classes
+├── Data/                 # DTOs (spatie/laravel-data)
+├── Enums/               # PHP enums
+├── Http/
+│   ├── Controllers/Api/V1/
+│   ├── Middleware/
+│   └── Requests/Api/V1/
+├── Models/
+├── Policies/
+├── Queries/             # Complex query builders
+├── Services/            # External service integrations
+└── Traits/              # Reusable model traits
+```
+
+## Installed Packages
+
+### Production
+- **laravel/sanctum** - API authentication
+- **spatie/laravel-permission** - Roles & permissions
+- **spatie/laravel-query-builder** - Advanced API filtering
+- **spatie/laravel-data** - DTOs
+- **spatie/laravel-activitylog** - Audit logging
+- **laravel/horizon** - Queue monitoring
+
+### Development
+- **laravel/pint** - Code formatting
+- **larastan/larastan** - Static analysis (Level 10)
+- **pestphp/pest** - Testing framework
+
+## Git Workflow
+
+### Commit Message Convention
+
+```
+<type>(<scope>): <description>
+
+Types:
+- feat: New feature
+- fix: Bug fix
+- refactor: Code refactoring
+- test: Adding tests
+- docs: Documentation
+- chore: Maintenance tasks
+```
+
+Examples:
+```
+feat(auth): implement login endpoint
+fix(tenancy): resolve cross-tenant data leak
+test(appointments): add validation tests
+```
 
 ## License
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+MIT License
