@@ -12,8 +12,10 @@ class ResourceNotFoundException extends DomainException
 
     protected int $httpStatus = Response::HTTP_NOT_FOUND;
 
-    public function __construct(string $message = 'The requested resource was not found')
-    {
-        parent::__construct($message);
+    public function __construct(
+        string $message = 'The requested resource was not found',
+        ?string $errorCode = null,
+    ) {
+        parent::__construct($message, $errorCode);
     }
 }
