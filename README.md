@@ -237,6 +237,37 @@ app/
 - **pestphp/pest** - Testing framework
 - **barryvdh/laravel-ide-helper** - IDE autocompletion support
 
+## Deployment
+
+### Production Setup
+
+1. Copy `.env.production.example` to `.env` and configure values
+2. Configure your web server (Nginx recommended)
+3. Set up SSL certificates (Let's Encrypt recommended)
+4. Configure Supervisor for Horizon queue workers
+
+### Deploy Script
+
+For zero-downtime deployments (Laravel Forge compatible):
+
+```bash
+./deploy.sh
+```
+
+This script handles:
+- Maintenance mode
+- Dependency installation
+- Database migrations
+- Cache optimization
+- Queue worker restart
+
+### Infrastructure Requirements
+
+- **Server:** 2GB+ RAM, 2+ vCPUs
+- **Database:** Managed PostgreSQL 16+
+- **Cache:** Managed Redis 7+
+- **Storage:** DigitalOcean Spaces (or S3-compatible)
+
 ## Git Workflow
 
 ### Commit Message Convention
