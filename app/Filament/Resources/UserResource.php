@@ -6,24 +6,31 @@ namespace App\Filament\Resources;
 
 use App\Enums\UserRole;
 use App\Filament\Resources\UserResource\Pages;
-use App\Models\Tenant;
 use App\Models\User;
-use Filament\Forms;
-use Filament\Forms\Form;
+use BackedEnum;
+use Filament\Forms\Components\Section;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
 use Filament\Resources\Resource;
+use Filament\Schemas\Schema;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use UnitEnum;
 
 class UserResource extends Resource
 {
     protected static ?string $model = User::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-users';
-
-    protected static ?string $navigationGroup = 'Administration';
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-users';
 
     protected static ?int $navigationSort = 2;
+
+    public static function getNavigationGroup(): string|UnitEnum|null
+    {
+        return 'Administration';
+    }
 
     public static function getEloquentQuery(): Builder
     {
@@ -31,60 +38,60 @@ class UserResource extends Resource
         return parent::getEloquentQuery()->withoutGlobalScope('tenant');
     }
 
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
-                Forms\Components\Section::make('Tenant')
+        return $schema
+            ->components([
+                Section::make('Tenant')
                     ->schema([
-                        Forms\Components\Select::make('tenant_id')
+                        Select::make('tenant_id')
                             ->relationship('tenant', 'name')
                             ->searchable()
                             ->preload()
                             ->required(),
                     ]),
 
-                Forms\Components\Section::make('Personal Information')
+                Section::make('Personal Information')
                     ->schema([
-                        Forms\Components\TextInput::make('title')
+                        TextInput::make('title')
                             ->maxLength(20)
                             ->placeholder('Dr., Mr., Ms., etc.'),
-                        Forms\Components\TextInput::make('first_name')
+                        TextInput::make('first_name')
                             ->required()
                             ->maxLength(255),
-                        Forms\Components\TextInput::make('last_name')
+                        TextInput::make('last_name')
                             ->required()
                             ->maxLength(255),
-                        Forms\Components\TextInput::make('email')
+                        TextInput::make('email')
                             ->email()
                             ->required()
                             ->maxLength(255),
-                        Forms\Components\TextInput::make('phone')
+                        TextInput::make('phone')
                             ->tel()
                             ->maxLength(50),
                     ])
                     ->columns(2),
 
-                Forms\Components\Section::make('Role & Credentials')
+                Section::make('Role & Credentials')
                     ->schema([
-                        Forms\Components\Select::make('primary_role')
+                        Select::make('primary_role')
                             ->options(UserRole::options())
                             ->required(),
-                        Forms\Components\TextInput::make('password')
+                        TextInput::make('password')
                             ->password()
                             ->dehydrateStateUsing(fn ($state) => filled($state) ? bcrypt($state) : null)
                             ->dehydrated(fn ($state) => filled($state))
-                            ->required(fn (string $context): bool => $context === 'create'),
-                        Forms\Components\TextInput::make('license_number')
+                            ->required(fn (string $operation): bool => $operation === 'create'),
+                        TextInput::make('license_number')
                             ->maxLength(50),
-                        Forms\Components\TextInput::make('specialization')
+                        TextInput::make('specialization')
                             ->maxLength(100),
                     ])
                     ->columns(2),
 
-                Forms\Components\Section::make('Status')
+                Section::make('Status')
                     ->schema([
-                        Forms\Components\Toggle::make('is_active')
+                        Toggle::make('is_active')
                             ->default(true),
                     ]),
             ]);

@@ -8,88 +8,99 @@ use App\Enums\SubscriptionPlan;
 use App\Enums\SubscriptionStatus;
 use App\Filament\Resources\TenantResource\Pages;
 use App\Models\Tenant;
-use Filament\Forms;
-use Filament\Forms\Form;
+use BackedEnum;
+use Filament\Forms\Components\DateTimePicker;
+use Filament\Forms\Components\KeyValue;
+use Filament\Forms\Components\Section;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
 use Filament\Resources\Resource;
+use Filament\Schemas\Schema;
 use Filament\Tables;
 use Filament\Tables\Table;
+use UnitEnum;
 
 class TenantResource extends Resource
 {
     protected static ?string $model = Tenant::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-building-office';
-
-    protected static ?string $navigationGroup = 'Administration';
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-building-office';
 
     protected static ?int $navigationSort = 1;
 
-    public static function form(Form $form): Form
+    public static function getNavigationGroup(): string|UnitEnum|null
     {
-        return $form
-            ->schema([
-                Forms\Components\Section::make('Basic Information')
+        return 'Administration';
+    }
+
+    public static function form(Schema $schema): Schema
+    {
+        return $schema
+            ->components([
+                Section::make('Basic Information')
                     ->schema([
-                        Forms\Components\TextInput::make('name')
+                        TextInput::make('name')
                             ->required()
                             ->maxLength(255),
-                        Forms\Components\TextInput::make('slug')
+                        TextInput::make('slug')
                             ->required()
                             ->unique(ignoreRecord: true)
                             ->maxLength(255)
                             ->alphaDash(),
-                        Forms\Components\TextInput::make('email')
+                        TextInput::make('email')
                             ->email()
                             ->maxLength(255),
-                        Forms\Components\TextInput::make('phone')
+                        TextInput::make('phone')
                             ->tel()
                             ->maxLength(50),
-                        Forms\Components\Textarea::make('address')
+                        Textarea::make('address')
                             ->rows(2),
-                        Forms\Components\TextInput::make('country_code')
+                        TextInput::make('country_code')
                             ->maxLength(3),
                     ])
                     ->columns(2),
 
-                Forms\Components\Section::make('Subscription')
+                Section::make('Subscription')
                     ->schema([
-                        Forms\Components\Select::make('subscription_status')
+                        Select::make('subscription_status')
                             ->options(SubscriptionStatus::options())
                             ->required(),
-                        Forms\Components\Select::make('subscription_plan')
+                        Select::make('subscription_plan')
                             ->options(SubscriptionPlan::options())
                             ->required(),
-                        Forms\Components\DateTimePicker::make('trial_ends_at'),
-                        Forms\Components\DateTimePicker::make('subscription_ends_at'),
+                        DateTimePicker::make('trial_ends_at'),
+                        DateTimePicker::make('subscription_ends_at'),
                     ])
                     ->columns(2),
 
-                Forms\Components\Section::make('Localization')
+                Section::make('Localization')
                     ->schema([
-                        Forms\Components\TextInput::make('default_currency')
+                        TextInput::make('default_currency')
                             ->default('USD')
                             ->maxLength(3),
-                        Forms\Components\TextInput::make('timezone')
+                        TextInput::make('timezone')
                             ->default('UTC')
                             ->maxLength(50),
-                        Forms\Components\TextInput::make('locale')
+                        TextInput::make('locale')
                             ->default('en')
                             ->maxLength(10),
                     ])
                     ->columns(3),
 
-                Forms\Components\Section::make('Status')
+                Section::make('Status')
                     ->schema([
-                        Forms\Components\Toggle::make('is_active')
+                        Toggle::make('is_active')
                             ->default(true),
                     ]),
 
-                Forms\Components\Section::make('Settings')
+                Section::make('Settings')
                     ->schema([
-                        Forms\Components\KeyValue::make('settings')
+                        KeyValue::make('settings')
                             ->keyLabel('Setting Key')
                             ->valueLabel('Setting Value'),
-                        Forms\Components\KeyValue::make('features')
+                        KeyValue::make('features')
                             ->keyLabel('Feature')
                             ->valueLabel('Enabled'),
                     ])
