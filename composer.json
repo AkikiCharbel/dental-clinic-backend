@@ -12,16 +12,22 @@
     "license": "MIT",
     "require": {
         "php": "^8.2",
+        "barryvdh/laravel-dompdf": "^3.1",
+        "intervention/image-laravel": "^1.5",
         "laravel/framework": "^12.0",
         "laravel/horizon": "^5.40",
         "laravel/sanctum": "^4.0",
         "laravel/tinker": "^2.10",
         "spatie/laravel-activitylog": "^4.10",
+        "spatie/laravel-backup": "^9.3",
         "spatie/laravel-data": "^4.18",
+        "spatie/laravel-health": "^1.34",
+        "spatie/laravel-medialibrary": "^11.17",
         "spatie/laravel-permission": "^6.23",
         "spatie/laravel-query-builder": "^6.3"
     },
     "require-dev": {
+        "barryvdh/laravel-ide-helper": "^3.6",
         "fakerphp/faker": "^1.23",
         "knuckleswtf/scribe": "^5.6",
         "larastan/larastan": "^3.8",
@@ -61,13 +67,19 @@
             "php artisan serve"
         ],
         "test": "@php artisan test",
+        "test:coverage": "@php artisan test --coverage",
         "pint": "./vendor/bin/pint",
         "pint:test": "./vendor/bin/pint --test",
-        "stan": "./vendor/bin/phpstan analyse",
+        "stan": "./vendor/bin/phpstan analyse --memory-limit=512M",
         "quality": [
             "@pint:test",
             "@stan",
             "@test"
+        ],
+        "ide-helper": [
+            "@php artisan ide-helper:generate",
+            "@php artisan ide-helper:models --nowrite",
+            "@php artisan ide-helper:meta"
         ],
         "post-autoload-dump": [
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",

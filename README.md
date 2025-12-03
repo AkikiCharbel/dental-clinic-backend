@@ -122,7 +122,23 @@ php artisan test --parallel
 
 # Run specific test file
 php artisan test tests/Feature/Api/V1/HealthTest.php
+
+# Run with coverage
+composer test:coverage
 ```
+
+### IDE Helper
+
+Generate IDE helper files for better autocompletion:
+
+```bash
+composer ide-helper
+```
+
+This generates:
+- `_ide_helper.php` - Facade method signatures
+- `_ide_helper_models.php` - Model property/relation hints
+- `.phpstorm.meta.php` - PhpStorm meta hints
 
 ### Queue Worker (Horizon)
 
@@ -209,11 +225,17 @@ app/
 - **spatie/laravel-data** - DTOs
 - **spatie/laravel-activitylog** - Audit logging
 - **laravel/horizon** - Queue monitoring
+- **spatie/laravel-backup** - Automated database backups
+- **spatie/laravel-health** - Application health monitoring
+- **spatie/laravel-medialibrary** - Media/file management
+- **intervention/image-laravel** - Image processing
+- **barryvdh/laravel-dompdf** - PDF generation
 
 ### Development
 - **laravel/pint** - Code formatting
 - **larastan/larastan** - Static analysis (Level 10)
 - **pestphp/pest** - Testing framework
+- **barryvdh/laravel-ide-helper** - IDE autocompletion support
 
 ## Git Workflow
 
