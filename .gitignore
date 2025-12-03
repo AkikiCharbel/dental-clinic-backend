@@ -74,6 +74,11 @@ docker-compose.override.yml
 # PHPStan cache
 /storage/phpstan
 
+# IDE Helper generated files
+_ide_helper.php
+_ide_helper_models.php
+.phpstorm.meta.php
+
 # Horizon
 /storage/horizon
 
