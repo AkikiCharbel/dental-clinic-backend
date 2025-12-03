@@ -50,13 +50,33 @@ This will start:
 php artisan migrate
 ```
 
-### 6. Start Development Server
+### 6. Seed the Database
+
+```bash
+php artisan db:seed
+```
+
+### 7. Start Development Server
 
 ```bash
 php artisan serve
 ```
 
 The API will be available at `http://localhost:8000`.
+The Admin Panel is available at `http://localhost:8000/admin`.
+
+## Demo Credentials
+
+After running the seeder, use these credentials:
+
+### Demo Tenant
+| Role | Email | Password |
+|------|-------|----------|
+| Admin | admin@demo.com | password |
+| Dentist | dentist@demo.com | password |
+| Receptionist | receptionist@demo.com | password |
+
+**Tenant ID:** Use the demo tenant's UUID (check via `php artisan tinker` → `Tenant::where('slug', 'demo')->first()->id`)
 
 ## Configuration
 
@@ -157,6 +177,15 @@ Access the Horizon dashboard at `/horizon` (requires authentication in productio
 ```
 http://localhost:8000/api/v1
 ```
+
+### Authentication Endpoints
+
+| Method | Endpoint | Description | Auth |
+|--------|----------|-------------|------|
+| POST | `/auth/login` | Authenticate user and get token | No |
+| POST | `/auth/logout` | Revoke current token | Yes |
+| GET | `/auth/me` | Get current user profile | Yes |
+| POST | `/auth/refresh` | Refresh access token | Yes |
 
 ### Health Check Endpoints
 

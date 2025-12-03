@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\HealthController;
 use Illuminate\Support\Facades\Route;
 
@@ -27,17 +28,21 @@ Route::prefix('v1')->group(function (): void {
         Route::get('/full', [HealthController::class, 'full'])->name('api.v1.health.full');
     });
 
-    // Public authentication routes
-    Route::prefix('auth')->group(function (): void {
-        // Future authentication routes will be added here
-        // Route::post('/login', [AuthController::class, 'login']);
-        // Route::post('/register', [AuthController::class, 'register']);
-        // Route::post('/forgot-password', [AuthController::class, 'forgotPassword']);
+    // Public authentication routes (rate limited)
+    Route::prefix('auth')->middleware('throttle:auth')->group(function (): void {
+        Route::post('/login', [AuthController::class, 'login'])->name('api.v1.auth.login');
     });
 
-    // Protected routes (require authentication)
-    Route::middleware(['auth:sanctum'])->group(function (): void {
-        // Future protected routes will be added here
+    // Protected authentication routes
+    Route::prefix('auth')->middleware(['auth:sanctum'])->group(function (): void {
+        Route::post('/logout', [AuthController::class, 'logout'])->name('api.v1.auth.logout');
+        Route::get('/me', [AuthController::class, 'me'])->name('api.v1.auth.me');
+        Route::post('/refresh', [AuthController::class, 'refresh'])->name('api.v1.auth.refresh');
+    });
+
+    // Protected routes (require authentication and tenant context)
+    Route::middleware(['auth:sanctum', 'tenant'])->group(function (): void {
+        // Future tenant-scoped routes will be added here
         // Route::apiResource('patients', PatientController::class);
         // Route::apiResource('appointments', AppointmentController::class);
         // Route::apiResource('treatments', TreatmentController::class);
