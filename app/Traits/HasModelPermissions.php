@@ -52,7 +52,7 @@ trait HasModelPermissions
 
         return array_map(
             fn (string $action): string => "{$action}_{$prefix}",
-            static::getPermissionActions()
+            static::getPermissionActions(),
         );
     }
 }

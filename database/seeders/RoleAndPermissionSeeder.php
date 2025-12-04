@@ -8,6 +8,7 @@ use App\Contracts\DefinesPermissions;
 use App\Enums\UserRole;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\File;
+use ReflectionClass;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\PermissionRegistrar;
@@ -96,7 +97,7 @@ class RoleAndPermissionSeeder extends Seeder
             return $models;
         }
 
-        $finder = new Finder();
+        $finder = new Finder;
         $finder->files()->in($modelsPath)->name('*.php');
 
         foreach ($finder as $file) {
@@ -110,7 +111,7 @@ class RoleAndPermissionSeeder extends Seeder
                 continue;
             }
 
-            $reflection = new \ReflectionClass($className);
+            $reflection = new ReflectionClass($className);
 
             if ($reflection->isAbstract() || $reflection->isInterface() || $reflection->isTrait()) {
                 continue;

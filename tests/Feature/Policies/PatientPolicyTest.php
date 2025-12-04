@@ -4,14 +4,13 @@ declare(strict_types=1);
 
 use App\Enums\UserRole;
 use App\Models\Patient;
-use App\Models\User;
 use App\Policies\PatientPolicy;
 
 describe('PatientPolicy', function (): void {
     beforeEach(function (): void {
         $this->tenant = createTenant();
         app()->instance('currentTenant', $this->tenant);
-        $this->policy = new PatientPolicy();
+        $this->policy = new PatientPolicy;
     });
 
     describe('viewAny()', function (): void {

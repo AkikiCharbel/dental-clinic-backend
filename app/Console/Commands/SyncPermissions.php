@@ -7,6 +7,7 @@ namespace App\Console\Commands;
 use App\Contracts\DefinesPermissions;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\File;
+use ReflectionClass;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\PermissionRegistrar;
 use Symfony\Component\Finder\Finder;
@@ -57,7 +58,7 @@ class SyncPermissions extends Command
 
             $this->components->twoColumnDetail(
                 "<fg=yellow>{$modelClass}</>",
-                sprintf('%d permissions', count($permissions))
+                sprintf('%d permissions', count($permissions)),
             );
 
             foreach ($permissions as $permission) {
@@ -141,7 +142,7 @@ class SyncPermissions extends Command
             return $models;
         }
 
-        $finder = new Finder();
+        $finder = new Finder;
         $finder->files()->in($modelsPath)->name('*.php');
 
         foreach ($finder as $file) {
@@ -155,7 +156,7 @@ class SyncPermissions extends Command
                 continue;
             }
 
-            $reflection = new \ReflectionClass($className);
+            $reflection = new ReflectionClass($className);
 
             if ($reflection->isAbstract() || $reflection->isInterface() || $reflection->isTrait()) {
                 continue;

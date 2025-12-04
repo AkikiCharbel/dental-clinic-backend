@@ -3,14 +3,13 @@
 declare(strict_types=1);
 
 use App\Enums\UserRole;
-use App\Models\User;
 use App\Policies\UserPolicy;
 
 describe('UserPolicy', function (): void {
     beforeEach(function (): void {
         $this->tenant = createTenant();
         app()->instance('currentTenant', $this->tenant);
-        $this->policy = new UserPolicy();
+        $this->policy = new UserPolicy;
     });
 
     describe('viewAny()', function (): void {

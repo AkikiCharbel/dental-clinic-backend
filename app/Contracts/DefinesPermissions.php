@@ -26,8 +26,6 @@ interface DefinesPermissions
      *
      * By default, this should be the snake_case plural of the model name.
      * e.g., Patient -> patients, User -> users
-     *
-     * @return string
      */
     public static function getPermissionPrefix(): string;
 

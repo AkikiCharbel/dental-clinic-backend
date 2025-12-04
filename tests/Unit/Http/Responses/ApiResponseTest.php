@@ -3,7 +3,6 @@
 declare(strict_types=1);
 
 use App\Http\Responses\ApiResponse;
-use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Symfony\Component\HttpFoundation\Response;

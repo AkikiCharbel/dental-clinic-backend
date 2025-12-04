@@ -82,7 +82,8 @@ describe('HasModelPermissions Trait', function (): void {
     describe('Custom Model Permissions', function (): void {
         it('can be overridden in a model', function (): void {
             // Create an anonymous class that overrides the default actions
-            $customModel = new class {
+            $customModel = new class
+            {
                 use HasModelPermissions;
 
                 public static function getPermissionActions(): array
