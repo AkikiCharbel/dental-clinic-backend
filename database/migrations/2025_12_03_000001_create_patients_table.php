@@ -67,9 +67,8 @@ return new class extends Migration
 
         // Add full-text search vector (PostgreSQL specific)
         if (config('database.default') === 'pgsql') {
-            Schema::table('patients', function (Blueprint $table): void {
-                $table->addColumn('tsvector', 'search_vector')->nullable();
-            });
+            // Add tsvector column using raw SQL (not supported by Laravel Blueprint)
+            DB::statement('ALTER TABLE patients ADD COLUMN search_vector tsvector');
 
             // Create GIN index for full-text search
             DB::statement('CREATE INDEX patients_search_vector_gin ON patients USING GIN(search_vector)');
