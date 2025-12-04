@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Contracts\DefinesPermissions;
 use App\Enums\SubscriptionPlan;
 use App\Enums\SubscriptionStatus;
+use App\Traits\HasModelPermissions;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -38,9 +40,10 @@ use Spatie\Activitylog\Traits\LogsActivity;
  * @property-read \Illuminate\Database\Eloquent\Collection<int, User> $users
  * @property-read \Illuminate\Database\Eloquent\Collection<int, Patient> $patients
  */
-class Tenant extends Model
+class Tenant extends Model implements DefinesPermissions
 {
     use HasFactory;
+    use HasModelPermissions;
     use HasUuids;
     use LogsActivity;
     use SoftDeletes;

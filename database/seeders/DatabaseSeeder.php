@@ -20,6 +20,7 @@ class DatabaseSeeder extends Seeder
         $this->command->info('');
 
         $this->call([
+            RoleAndPermissionSeeder::class,
             TenantSeeder::class,
             UserSeeder::class,
             PatientSeeder::class,

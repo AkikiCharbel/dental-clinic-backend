@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Contracts\DefinesPermissions;
 use App\Enums\ContactMethod;
 use App\Enums\Gender;
 use App\Enums\PatientStatus;
 use App\Traits\BelongsToTenant;
+use App\Traits\HasModelPermissions;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -50,10 +52,11 @@ use Spatie\Activitylog\Traits\LogsActivity;
  * @property-read string $full_name
  * @property-read int|null $age
  */
-class Patient extends Model
+class Patient extends Model implements DefinesPermissions
 {
     use BelongsToTenant;
     use HasFactory;
+    use HasModelPermissions;
     use HasUuids;
     use LogsActivity;
     use SoftDeletes;

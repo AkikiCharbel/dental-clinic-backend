@@ -46,7 +46,10 @@ if (! function_exists('format_currency')) {
      */
     function format_currency(float|int|string $value, ?string $currency = null): string
     {
-        $currency ??= tenant()?->default_currency ?? 'USD';
+        if ($currency === null) {
+            $tenant = tenant();
+            $currency = $tenant !== null ? $tenant->default_currency : 'USD';
+        }
         $value = (float) $value;
 
         return number_format($value, 2).' '.$currency;

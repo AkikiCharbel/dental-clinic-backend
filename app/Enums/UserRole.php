@@ -74,4 +74,60 @@ enum UserRole: string
     {
         return [self::Receptionist, self::Assistant];
     }
+
+    /**
+     * Get default permissions for this role.
+     *
+     * Returns an array of permission names that should be assigned to this role.
+     *
+     * @return array<int, string>
+     */
+    public function defaultPermissions(): array
+    {
+        return match ($this) {
+            self::Admin => ['*'], // Admins get all permissions via gate
+            self::Dentist => [
+                'view_patients',
+                'create_patients',
+                'update_patients',
+                'view_users',
+                'view_tenants',
+            ],
+            self::Hygienist => [
+                'view_patients',
+                'update_patients',
+                'view_users',
+            ],
+            self::Receptionist => [
+                'view_patients',
+                'create_patients',
+                'update_patients',
+                'view_users',
+            ],
+            self::Assistant => [
+                'view_patients',
+                'view_users',
+            ],
+        };
+    }
+
+    /**
+     * Get all permissions for all roles as a flat array.
+     *
+     * @return array<int, string>
+     */
+    public static function allDefaultPermissions(): array
+    {
+        $permissions = [];
+
+        foreach (self::cases() as $role) {
+            $rolePermissions = $role->defaultPermissions();
+            // Skip wildcard '*' as it's handled by Gate
+            if ($rolePermissions !== ['*']) {
+                $permissions = array_merge($permissions, $rolePermissions);
+            }
+        }
+
+        return array_values(array_unique($permissions));
+    }
 }

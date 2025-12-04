@@ -70,9 +70,15 @@ final class AuthController extends Controller
     public function login(LoginRequest $request): JsonResponse
     {
         $validated = $request->validated();
+        /** @var string $tenantId */
+        $tenantId = $validated['tenant_id'];
+        /** @var string $email */
+        $email = $validated['email'];
+        /** @var string $password */
+        $password = $validated['password'];
 
         // Find the tenant first
-        $tenant = Tenant::find($validated['tenant_id']);
+        $tenant = Tenant::query()->where('id', $tenantId)->first();
 
         if ($tenant === null) {
             return ApiResponse::error(
@@ -93,12 +99,12 @@ final class AuthController extends Controller
 
         // Find user by email within the tenant (bypass global scope for login)
         $user = User::withoutTenantScope()
-            ->where('tenant_id', $validated['tenant_id'])
-            ->where('email', $validated['email'])
+            ->where('tenant_id', $tenantId)
+            ->where('email', $email)
             ->first();
 
         // Validate credentials - use generic message for security
-        if ($user === null || ! Hash::check($validated['password'], $user->password)) {
+        if ($user === null || ! Hash::check($password, $user->password)) {
             return ApiResponse::error(
                 message: 'Invalid credentials',
                 errorCode: 'INVALID_CREDENTIALS',
