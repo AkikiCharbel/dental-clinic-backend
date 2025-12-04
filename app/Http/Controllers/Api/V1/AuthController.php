@@ -118,14 +118,19 @@ final class AuthController extends Controller
         // Update last login info
         $user->updateLastLogin($request->ip());
 
-        // Create API token
-        $token = $user->createToken('api-token')->plainTextToken;
+        // Create API token with role-based abilities and expiration
+        $tokenResult = $user->createToken(
+            name: 'api-token',
+            abilities: $this->getAbilitiesForUser($user),
+            expiresAt: now()->addDays(7),
+        );
 
         return ApiResponse::success(
             data: [
                 'user' => $this->formatUser($user),
                 'tenant' => $this->formatTenant($tenant),
-                'token' => $token,
+                'token' => $tokenResult->plainTextToken,
+                'expires_at' => $tokenResult->accessToken->expires_at?->toIso8601String(),
             ],
             message: 'Login successful',
         );
@@ -225,11 +230,18 @@ final class AuthController extends Controller
         // Revoke current token
         $user->currentAccessToken()?->delete();
 
-        // Create new token
-        $token = $user->createToken('api-token')->plainTextToken;
+        // Create new token with same abilities and fresh expiration
+        $tokenResult = $user->createToken(
+            name: 'api-token',
+            abilities: $this->getAbilitiesForUser($user),
+            expiresAt: now()->addDays(7),
+        );
 
         return ApiResponse::success(
-            data: ['token' => $token],
+            data: [
+                'token' => $tokenResult->plainTextToken,
+                'expires_at' => $tokenResult->accessToken->expires_at?->toIso8601String(),
+            ],
             message: 'Token refreshed successfully',
         );
     }
@@ -298,5 +310,26 @@ final class AuthController extends Controller
         }
 
         return $data;
+    }
+
+    /**
+     * Get token abilities based on user role.
+     *
+     * @return array<int, string>
+     */
+    private function getAbilitiesForUser(User $user): array
+    {
+        // Admin gets full access
+        if ($user->isAdmin()) {
+            return ['*'];
+        }
+
+        // Providers (dentists, hygienists) get read, write, and delete-own
+        if ($user->isProvider()) {
+            return ['read', 'write', 'delete-own'];
+        }
+
+        // Other roles (receptionist, assistant) get read and write
+        return ['read', 'write'];
     }
 }
