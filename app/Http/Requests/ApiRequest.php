@@ -88,7 +88,7 @@ abstract class ApiRequest extends FormRequest
     /**
      * Get the current tenant ID.
      */
-    protected function currentTenantId(): ?int
+    protected function currentTenantId(): ?string
     {
         return tenant_id();
     }

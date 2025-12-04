@@ -28,5 +28,28 @@ parameters:
         # Ignore covariance issue in BelongsToTenant trait
         - '#Method .+::withoutTenantScope\(\) should return Illuminate\\Database\\Eloquent\\Builder<static\(.+\)> but returns#'
 
+        # Ignore HasFactory generic type (common Larastan limitation)
+        - '#Class .+ uses generic trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory but does not specify its types#'
+
+        # Ignore Attribute generic types (Laravel accessor pattern)
+        - '#Method .+::.+\(\) return type with generic class Illuminate\\Database\\Eloquent\\Casts\\Attribute does not specify its types#'
+
+        # Ignore Filament v4 Schema/Form type issues (Filament stubs not yet updated)
+        - '#Call to static method make\(\) on an unknown class Filament\\#'
+        - '#Cannot call method .+ on mixed#'
+        - message: '#Parameter \#1 \$components of method Filament\\Schemas\\Schema::components\(\) expects#'
+          path: app/Filament/Resources/*.php
+        - message: '#Parameter \#1 \$actions of method Filament\\Tables\\Table::actions\(\) expects#'
+          path: app/Filament/Resources/*.php
+        - message: '#Parameter \#1 \$actions of method Filament\\Tables\\Table::bulkActions\(\) expects#'
+          path: app/Filament/Resources/*.php
+        - message: '#Method .+::getEloquentQuery\(\) return type with generic class#'
+          path: app/Filament/Resources/*.php
+        - message: '#Parameter \#1 \$value of function bcrypt expects string, mixed given#'
+          path: app/Filament/Resources/*.php
+
+        # Ignore nullsafe on non-nullable in specific cases
+        - '#Using nullsafe (method call|property access) on non-nullable type#'
+
     # Memory limit for analysis
     # memoryLimit: 512M

@@ -4,24 +4,38 @@ declare(strict_types=1);
 
 namespace Database\Seeders;
 
-use App\Models\User;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
 {
-    use WithoutModelEvents;
-
     /**
      * Seed the application's database.
      */
     public function run(): void
     {
-        // User::factory(10)->create();
+        $this->command->info('');
+        $this->command->info('====================================');
+        $this->command->info('  Dental Clinic Database Seeder');
+        $this->command->info('====================================');
+        $this->command->info('');
 
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
+        $this->call([
+            RoleAndPermissionSeeder::class,
+            TenantSeeder::class,
+            UserSeeder::class,
+            PatientSeeder::class,
         ]);
+
+        $this->command->info('');
+        $this->command->info('====================================');
+        $this->command->info('  Seeding Complete!');
+        $this->command->info('====================================');
+        $this->command->info('');
+        $this->command->info('Demo Credentials:');
+        $this->command->info('  Tenant: demo');
+        $this->command->info('  Admin: admin@demo.com / password');
+        $this->command->info('  Dentist: dentist@demo.com / password');
+        $this->command->info('  Receptionist: receptionist@demo.com / password');
+        $this->command->info('');
     }
 }

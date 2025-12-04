@@ -5,9 +5,11 @@ declare(strict_types=1);
 namespace App\Http\Middleware;
 
 use App\Exceptions\Domain\ResourceNotFoundException;
+use App\Exceptions\Domain\UnauthorizedActionException;
 use App\Models\Tenant;
 use Closure;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
@@ -31,8 +33,16 @@ final class ResolveTenant
 
         if ($tenant === null) {
             throw new ResourceNotFoundException(
-                message: 'Tenant not found or inactive',
+                message: 'Tenant not found or could not be identified',
                 errorCode: 'TENANT_NOT_FOUND',
+            );
+        }
+
+        // Verify tenant is active and subscription allows access
+        if (! $tenant->isActive()) {
+            throw new UnauthorizedActionException(
+                message: 'Tenant account is inactive or subscription has expired',
+                errorCode: 'TENANT_INACTIVE',
             );
         }
 
@@ -49,7 +59,7 @@ final class ResolveTenant
     {
         // Strategy 1: X-Tenant-ID header (highest priority for API clients)
         if ($tenantId = $request->header('X-Tenant-ID')) {
-            return $this->findActiveTenant((int) $tenantId);
+            return $this->findTenantById($tenantId);
         }
 
         // Strategy 2: Subdomain extraction
@@ -59,7 +69,7 @@ final class ResolveTenant
 
         // Strategy 3: Authenticated user's tenant
         if ($user = $request->user()) {
-            return $this->findActiveTenant($user->tenant_id);
+            return $user->tenant;
         }
 
         return null;
@@ -88,22 +98,21 @@ final class ResolveTenant
 
         return Tenant::query()
             ->where('slug', $subdomain)
-            ->where('is_active', true)
             ->first();
     }
 
     /**
-     * Find an active tenant by ID.
+     * Find a tenant by ID (UUID).
      */
-    private function findActiveTenant(?int $tenantId): ?Tenant
+    private function findTenantById(string $tenantId): ?Tenant
     {
-        if ($tenantId === null) {
+        // Validate UUID format
+        if (! Str::isUuid($tenantId)) {
             return null;
         }
 
         return Tenant::query()
             ->where('id', $tenantId)
-            ->where('is_active', true)
             ->first();
     }
 }
