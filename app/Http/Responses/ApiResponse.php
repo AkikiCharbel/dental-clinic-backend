@@ -170,7 +170,7 @@ final class ApiResponse
      */
     public static function noContent(): JsonResponse
     {
-        return response()->json(null, Response::HTTP_NO_CONTENT);
+        return new JsonResponse(null, Response::HTTP_NO_CONTENT);
     }
 
     /**

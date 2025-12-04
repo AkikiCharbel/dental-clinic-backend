@@ -151,6 +151,11 @@ final class Encryption
 
         [$local, $domain] = explode('@', $email);
 
+        // Don't mask if local part is too short to meaningfully mask
+        if (strlen($local) <= 2) {
+            return $email;
+        }
+
         $maskedLocal = self::mask($local, 1, 1);
 
         return $maskedLocal.'@'.$domain;
