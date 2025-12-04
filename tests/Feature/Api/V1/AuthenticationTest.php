@@ -4,9 +4,23 @@ declare(strict_types=1);
 
 use App\Models\Tenant;
 use App\Models\User;
+use Illuminate\Routing\Middleware\ThrottleRequests;
+use Illuminate\Routing\Middleware\ThrottleRequestsWithRedis;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\RateLimiter;
 
 describe('Authentication API', function (): void {
+    beforeEach(function (): void {
+        // Disable rate limiting for authentication tests
+        $this->withoutMiddleware([
+            ThrottleRequests::class,
+            ThrottleRequestsWithRedis::class,
+        ]);
+
+        // Clear rate limiter for clean test state
+        RateLimiter::clear('auth');
+    });
+
     describe('POST /api/v1/auth/login', function (): void {
         it('logs in a user with valid credentials', function (): void {
             $tenant = Tenant::factory()->create();

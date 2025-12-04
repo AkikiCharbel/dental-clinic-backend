@@ -32,7 +32,7 @@ return new class extends Migration
             $table->string('last_login_ip', 45)->nullable()->after('last_login_at');
 
             // Preferences
-            $table->jsonb('preferences')->nullable()->after('last_login_ip');
+            $table->json('preferences')->nullable()->after('last_login_ip');
 
             // Additional indexes
             $table->index(['tenant_id', 'primary_role']);
@@ -41,19 +41,52 @@ return new class extends Migration
 
         // Migrate existing 'name' data to first_name/last_name
         // This is done safely by splitting on the first space
-        Illuminate\Support\Facades\DB::statement("
-            UPDATE users
-            SET
-                first_name = CASE
-                    WHEN position(' ' in name) > 0 THEN substring(name from 1 for position(' ' in name) - 1)
-                    ELSE name
-                END,
-                last_name = CASE
-                    WHEN position(' ' in name) > 0 THEN substring(name from position(' ' in name) + 1)
-                    ELSE NULL
-                END
-            WHERE first_name IS NULL
-        ");
+        $driver = Schema::getConnection()->getDriverName();
+
+        if ($driver === 'pgsql') {
+            Illuminate\Support\Facades\DB::statement("
+                UPDATE users
+                SET
+                    first_name = CASE
+                        WHEN position(' ' in name) > 0 THEN substring(name from 1 for position(' ' in name) - 1)
+                        ELSE name
+                    END,
+                    last_name = CASE
+                        WHEN position(' ' in name) > 0 THEN substring(name from position(' ' in name) + 1)
+                        ELSE NULL
+                    END
+                WHERE first_name IS NULL
+            ");
+        } elseif ($driver === 'sqlite') {
+            Illuminate\Support\Facades\DB::statement("
+                UPDATE users
+                SET
+                    first_name = CASE
+                        WHEN instr(name, ' ') > 0 THEN substr(name, 1, instr(name, ' ') - 1)
+                        ELSE name
+                    END,
+                    last_name = CASE
+                        WHEN instr(name, ' ') > 0 THEN substr(name, instr(name, ' ') + 1)
+                        ELSE NULL
+                    END
+                WHERE first_name IS NULL
+            ");
+        } else {
+            // MySQL/MariaDB syntax
+            Illuminate\Support\Facades\DB::statement("
+                UPDATE users
+                SET
+                    first_name = CASE
+                        WHEN LOCATE(' ', name) > 0 THEN SUBSTRING(name, 1, LOCATE(' ', name) - 1)
+                        ELSE name
+                    END,
+                    last_name = CASE
+                        WHEN LOCATE(' ', name) > 0 THEN SUBSTRING(name, LOCATE(' ', name) + 1)
+                        ELSE NULL
+                    END
+                WHERE first_name IS NULL
+            ");
+        }
     }
 
     /**

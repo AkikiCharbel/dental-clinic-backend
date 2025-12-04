@@ -36,7 +36,7 @@ return new class extends Migration
             $table->boolean('marketing_consent')->default(false);
 
             // Address (stored as JSON for flexibility)
-            $table->jsonb('address')->nullable();
+            $table->json('address')->nullable();
 
             // Provider preferences
             $table->foreignId('preferred_location_id')->nullable();
@@ -49,8 +49,8 @@ return new class extends Migration
 
             // Medical info (encrypted at application level)
             $table->text('medical_notes')->nullable();
-            $table->jsonb('allergies')->nullable();
-            $table->jsonb('medications')->nullable();
+            $table->json('allergies')->nullable();
+            $table->json('medications')->nullable();
 
             // Emergency contact
             $table->string('emergency_contact_name')->nullable();
@@ -77,20 +77,22 @@ return new class extends Migration
             $table->index(['tenant_id', 'created_at']);
         });
 
-        // Create full-text search index using PostgreSQL tsvector
+        // Create full-text search index using PostgreSQL tsvector (only for PostgreSQL)
         // This enables fast patient search across multiple fields
-        Illuminate\Support\Facades\DB::statement("
-            ALTER TABLE patients ADD COLUMN search_vector tsvector
-            GENERATED ALWAYS AS (
-                setweight(to_tsvector('english', coalesce(first_name, '')), 'A') ||
-                setweight(to_tsvector('english', coalesce(last_name, '')), 'A') ||
-                setweight(to_tsvector('english', coalesce(preferred_name, '')), 'B') ||
-                setweight(to_tsvector('english', coalesce(email, '')), 'C') ||
-                setweight(to_tsvector('english', coalesce(phone, '')), 'C')
-            ) STORED
-        ");
+        if (Schema::getConnection()->getDriverName() === 'pgsql') {
+            Illuminate\Support\Facades\DB::statement("
+                ALTER TABLE patients ADD COLUMN search_vector tsvector
+                GENERATED ALWAYS AS (
+                    setweight(to_tsvector('english', coalesce(first_name, '')), 'A') ||
+                    setweight(to_tsvector('english', coalesce(last_name, '')), 'A') ||
+                    setweight(to_tsvector('english', coalesce(preferred_name, '')), 'B') ||
+                    setweight(to_tsvector('english', coalesce(email, '')), 'C') ||
+                    setweight(to_tsvector('english', coalesce(phone, '')), 'C')
+                ) STORED
+            ");
 
-        Illuminate\Support\Facades\DB::statement('CREATE INDEX patients_search_idx ON patients USING GIN (search_vector)');
+            Illuminate\Support\Facades\DB::statement('CREATE INDEX patients_search_idx ON patients USING GIN (search_vector)');
+        }
     }
 
     /**

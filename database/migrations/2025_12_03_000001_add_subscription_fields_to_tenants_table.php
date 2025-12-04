@@ -27,7 +27,7 @@ return new class extends Migration
             $table->string('country_code', 2)->nullable()->after('locale');
 
             // Features (stored separately from settings for clearer separation)
-            $table->jsonb('features')->nullable()->after('settings');
+            $table->json('features')->nullable()->after('settings');
 
             // Indexes for common queries
             $table->index(['subscription_status', 'is_active']);
