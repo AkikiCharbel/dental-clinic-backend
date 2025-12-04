@@ -12,8 +12,11 @@ class UnauthorizedActionException extends DomainException
 
     protected int $httpStatus = Response::HTTP_FORBIDDEN;
 
-    public function __construct(string $message = 'You are not authorized to perform this action')
-    {
-        parent::__construct($message);
+    public function __construct(
+        string $message = 'You are not authorized to perform this action',
+        ?string $errorCode = null,
+        ?int $httpStatus = null,
+    ) {
+        parent::__construct($message, $errorCode, $httpStatus);
     }
 }
